@@ -5,7 +5,7 @@
  * 修改下方 SITE_CONFIG，三版頁面 (v1 / v2 / v3) 會同步生效。
  */
 window.SITE_CONFIG = {
-  contactEmail: 'contact@example.com',
+  contactEmail: 'support@domino.com.tw',
   emailSubject: 'Domino 知識資料導出工具 - 諮詢',
   emailBody: ''   // 可選；留空字串代表不帶 body
 };
