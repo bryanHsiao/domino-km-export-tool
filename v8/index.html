@@ -824,6 +824,60 @@ footer {
 .feature-item.reveal.is-visible:nth-child(2n) { transform: translateY(0) scale(1) rotate(0.5deg); }
 .feature-item.reveal.is-visible:nth-child(2n+1) { transform: translateY(0) scale(1) rotate(-0.4deg); }
 
+/* ─── Quick nav (右側浮動章節跳轉) ─────────────────────── */
+.quick-nav {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 40;
+  pointer-events: none;
+}
+.quick-nav a {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 12px;
+  background: var(--c, var(--cream));
+  border: var(--border-thick);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 0 var(--shadow);
+  text-decoration: none;
+  color: var(--ink);
+  font-family: var(--font-zh);
+  font-size: 13px;
+  font-weight: 700;
+  transition: transform 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+              box-shadow 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+              background 0.2s ease;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.quick-nav a .num {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.quick-nav a .label {
+  letter-spacing: 0.02em;
+}
+.quick-nav a:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0 0 var(--shadow);
+}
+.quick-nav a.active {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 0 var(--shadow);
+  background: var(--ink);
+  color: var(--cream);
+}
+.quick-nav a.active .num { color: var(--butter); }
+
 /* ─── Section dividers (squiggle) ─────────────────────── */
 .squiggle {
   display: block;
@@ -843,6 +897,14 @@ footer {
   .product-reveal { padding: 44px 28px; }
   .closing-block { padding: 48px 28px; }
   .contact { padding: 44px 28px; }
+}
+@media (max-width: 1024px) {
+  .quick-nav { right: 14px; gap: 6px; }
+  .quick-nav a { padding: 7px 12px 7px 10px; font-size: 12px; }
+  .quick-nav a .num { font-size: 13px; }
+}
+@media (max-width: 760px) {
+  .quick-nav { display: none; }
 }
 @media (max-width: 640px) {
   .topbar-inner { padding: 12px 20px; }
@@ -916,6 +978,17 @@ footer {
     </a>
   </div>
 </header>
+
+<!-- Quick nav (右側浮動章節跳轉) -->
+<nav class="quick-nav" aria-label="章節快速導航">
+  <a href="#why" data-section="why" style="--c: var(--lavender)"><span class="num">01</span><span class="label">背景</span></a>
+  <a href="#positioning" data-section="positioning" style="--c: var(--mint)"><span class="num">02</span><span class="label">定位</span></a>
+  <a href="#features" data-section="features" style="--c: var(--butter)"><span class="num">03</span><span class="label">特色</span></a>
+  <a href="#use-cases" data-section="use-cases" style="--c: var(--peach)"><span class="num">04</span><span class="label">情境</span></a>
+  <a href="#extensions" data-section="extensions" style="--c: var(--bubble)"><span class="num">05</span><span class="label">應用</span></a>
+  <a href="#closing" data-section="closing" style="--c: var(--sky)"><span class="num">06</span><span class="label">結語</span></a>
+  <a href="#contact" data-section="contact" style="--c: var(--lavender)"><span class="num">07</span><span class="label">聯繫</span></a>
+</nav>
 
 <!-- Page -->
 <div class="page" id="top">
@@ -1215,6 +1288,29 @@ footer {
     }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
 
     els.forEach(function (el) { io.observe(el); });
+  })();
+
+  // Quick-nav scroll spy
+  (function () {
+    var links = document.querySelectorAll('.quick-nav a');
+    if (!links.length) return;
+    var sections = Array.prototype.map.call(links, function (a) {
+      return document.querySelector(a.getAttribute('href'));
+    }).filter(Boolean);
+
+    function update() {
+      var y = window.scrollY + 220;
+      var current = null;
+      sections.forEach(function (sec) {
+        if (sec.offsetTop <= y) current = sec.id;
+      });
+      links.forEach(function (a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
   })();
 </script>
 
