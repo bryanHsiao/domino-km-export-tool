@@ -7,6 +7,11 @@
 > - **v2** ─ Operations Console / 終端機風 → <https://bryanhsiao.github.io/domino-km-export-tool/v2/>
 > - **v3** ─ Friendly Soft / 暖系現代風 → <https://bryanhsiao.github.io/domino-km-export-tool/v3/>
 > - **v4** ─ Refined Whitepaper / 修飾型長文 → <https://bryanhsiao.github.io/domino-km-export-tool/v4/>
+> - **v5** ─ Swiss / Brutalist Grid → <https://bryanhsiao.github.io/domino-km-export-tool/v5/>
+> - **v6** ─ Maximalist Magazine / 雜誌跨頁 → <https://bryanhsiao.github.io/domino-km-export-tool/v6/>
+> - **v7** ─ Japanese Wabi-Sabi / 侘寂極簡 → <https://bryanhsiao.github.io/domino-km-export-tool/v7/>
+> - **v8** ─ Pastel Y2K / Soft Brutalism → <https://bryanhsiao.github.io/domino-km-export-tool/v8/>
+> - **v9** ─ Architectural Blueprint / 工程藍圖 → <https://bryanhsiao.github.io/domino-km-export-tool/v9/>
 
 > ⚙️ **設定聯絡 Email**
 > 三版頁面共用根目錄的 [`config.js`](./config.js)。修改其中的 `contactEmail` 與 `emailSubject` 即可同步生效，不需動 HTML：
