@@ -1494,7 +1494,7 @@ footer {
           <li>POC 與評估專案的時程與資源規劃</li>
         </ul>
         <div class="cta-buttons">
-          <a href="mailto:contact@example.com?subject=Domino%20%E7%9F%A5%E8%AD%98%E8%B3%87%E6%96%99%E5%B0%8E%E5%87%BA%E5%B7%A5%E5%85%B7%20-%20%E8%AB%AE%E8%A9%A2" class="btn btn-primary">
+          <a data-mailto href="#" class="btn btn-primary">
             <span>預約 30 分鐘聊聊</span>
             <span class="arrow">→</span>
           </a>
@@ -1515,6 +1515,7 @@ footer {
   </div>
 </footer>
 
+<script src="../config.js"></script>
 <script>
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
