@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Domino 知識資料導出工具 — 讓多年累積的 Domino 知識，輕鬆進入 AI 應用流程</title>
+<meta name="description" content="不用大改既有系統，也不用重建文件 — 從導出開始，把 Domino 多年累積的知識，逐步交給企業 AI 使用。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FBF6EC;
+  --bg-soft: #F4EDDC;
+  --bg-card: #FFFFFF;
+  --bg-deep: #1F2D26;
+
+  --ink: #1C2620;
+  --ink-soft: #44514B;
+  --ink-mute: #707A75;
+  --ink-faint: #A8B0AB;
+
+  --coral: #FF6B47;
+  --coral-deep: #E25234;
+  --coral-soft: #FFE5DC;
+  --coral-glow: rgba(255, 107, 71, 0.18);
+
+  --forest: #2C5F4A;
+  --forest-deep: #1B4234;
+  --forest-soft: #DCE9DF;
+
+  --mustard: #F5D26F;
+  --mustard-soft: #FBEFC9;
+
+  --lavender: #C9BBE7;
+  --lavender-soft: #E9E2F5;
+
+  --sky: #A8D5E2;
+  --sky-soft: #DCEDF2;
+
+  --border: #E8DFCB;
+  --border-strong: #D4C8AE;
+  --hairline: rgba(28, 38, 32, 0.08);
+
+  --shadow-sm: 0 2px 8px rgba(28, 38, 32, 0.04);
+  --shadow-md: 0 6px 24px rgba(28, 38, 32, 0.06);
+  --shadow-lg: 0 18px 48px rgba(28, 38, 32, 0.1);
+  --shadow-coral: 0 8px 28px rgba(255, 107, 71, 0.22);
+
+  --font-display: 'Bricolage Grotesque', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-zh: 'Noto Sans TC', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-zh), var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Soft organic blobs in background */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px;
+  right: -200px;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, var(--coral-soft) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -300px;
+  left: -300px;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, var(--sky-soft) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+::selection { background: var(--coral); color: #fff; }
+
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Nav ──────────────────────────────────────────── */
+.nav {
+  position: sticky;
+  top: 0;
+  background: rgba(251, 246, 236, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 50;
+  border-bottom: 1px solid var(--hairline);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--coral) 0%, var(--coral-deep) 100%);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  box-shadow: var(--shadow-sm);
+}
+.brand-text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.brand-text small {
+  display: block;
+  font-family: var(--font-zh);
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-weight: 400;
+  margin-top: -2px;
+  letter-spacing: 0.02em;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-family: var(--font-zh);
+  font-size: 14px;
+}
+.nav-links a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--coral); }
+.nav-cta {
+  padding: 9px 18px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-cta:hover {
+  background: var(--coral) !important;
+  transform: translateY(-1px);
+  color: #fff !important;
+}
+
+/* ─── Hero ─────────────────────────────────────────── */
+.hero {
+  padding: 88px 0 96px;
+  position: relative;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  background: var(--coral-soft);
+  color: var(--coral-deep);
+  border-radius: 999px;
+  font-family: var(--font-zh);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 28px;
+}
+.hero-eyebrow .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--coral);
+  animation: gentle-pulse 2.4s ease-in-out infinite;
+}
+@keyframes gentle-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+.hero h1 {
+  font-family: var(--font-zh), var(--font-display);
+  font-size: clamp(40px, 5.6vw, 76px);
+  line-height: 1.18;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 32px;
+  max-width: 980px;
+}
+.hero h1 .underline {
+  position: relative;
+  display: inline-block;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.hero h1 .underline svg {
+  position: absolute;
+  left: -2%;
+  bottom: -10px;
+  width: 104%;
+  height: auto;
+  pointer-events: none;
+}
+.hero h1 .underline svg path {
+  stroke: var(--coral);
+  stroke-width: 8;
+  stroke-linecap: round;
+  fill: none;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw 1.8s 0.6s ease-out forwards;
+}
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.hero-lede {
+  font-family: var(--font-zh);
+  font-size: 19px;
+  line-height: 1.78;
+  color: var(--ink-soft);
+  max-width: 700px;
+  margin-bottom: 44px;
+}
+.hero-lede strong {
+  color: var(--ink);
+  font-weight: 600;
+  background: linear-gradient(to bottom, transparent 60%, var(--mustard-soft) 60%);
+  padding: 0 3px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 56px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 26px;
+  border-radius: 14px;
+  font-family: var(--font-zh);
+  font-size: 15.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: none;
+  letter-spacing: -0.005em;
+}
+.btn-primary {
+  background: var(--coral);
+  color: #fff;
+  box-shadow: var(--shadow-coral);
+}
+.btn-primary:hover {
+  background: var(--coral-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(255, 107, 71, 0.32);
+}
+.btn-primary .arrow { transition: transform 0.25s; }
+.btn-primary:hover .arrow { transform: translateX(4px); }
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  padding: 14.5px 24.5px;
+}
+.btn-secondary:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* Trust strip */
+.trust-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 8px;
+  box-shadow: var(--shadow-md);
+  max-width: 880px;
+}
+.trust-item {
+  padding: 18px 18px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: background 0.2s;
+}
+.trust-item:hover { background: var(--bg-soft); }
+.trust-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.trust-icon.coral { background: var(--coral-soft); color: var(--coral-deep); }
+.trust-icon.forest { background: var(--forest-soft); color: var(--forest); }
+.trust-icon.mustard { background: var(--mustard-soft); color: #B07F18; }
+.trust-icon.sky { background: var(--sky-soft); color: #1E5A6B; }
+.trust-label {
+  font-family: var(--font-zh);
+  font-size: 12px;
+  color: var(--ink-mute);
+  font-weight: 500;
+}
+.trust-value {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+/* ─── Section base ─────────────────────────────────── */
+section {
+  padding: 96px 0;
+  position: relative;
+}
+.section-head {
+  margin-bottom: 56px;
+  max-width: 880px;
+}
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-family: var(--font-zh);
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.section-eyebrow.coral { background: var(--coral-soft); color: var(--coral-deep); }
+.section-eyebrow.forest { background: var(--forest-soft); color: var(--forest); }
+.section-eyebrow.mustard { background: var(--mustard-soft); color: #8A6210; }
+.section-eyebrow.sky { background: var(--sky-soft); color: #1E5A6B; }
+.section-eyebrow.lavender { background: var(--lavender-soft); color: #5E4D8A; }
+.section-eyebrow .num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.section-title {
+  font-family: var(--font-zh), var(--font-display);
+  font-size: clamp(32px, 4.4vw, 52px);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+.section-title .accent { color: var(--coral); }
+.section-title .accent-forest { color: var(--forest); }
+.section-sub {
+  font-family: var(--font-zh);
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  max-width: 720px;
+}
+
+/* ─── Why ──────────────────────────────────────────── */
+.why-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+.why-prose {
+  font-family: var(--font-zh);
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--ink-soft);
+}
+.why-prose p {
+  margin-bottom: 20px;
+}
+.bubble-quote {
+  position: relative;
+  margin: 32px 0;
+  padding: 30px 32px;
+  background: var(--bg-card);
+  border-radius: 22px;
+  border: 1.5px solid var(--coral-soft);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-zh);
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--ink);
+  font-weight: 500;
+}
+.bubble-quote::before {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 36px;
+  width: 24px;
+  height: 24px;
+  background: var(--bg-card);
+  border-right: 1.5px solid var(--coral-soft);
+  border-bottom: 1.5px solid var(--coral-soft);
+  transform: rotate(45deg);
+}
+.bubble-quote .label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--coral-deep);
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.bubble-quote .label::before {
+  content: '✦';
+  font-size: 14px;
+}
+
+.knowledge-card {
+  background: var(--bg-card);
+  border-radius: 22px;
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}
+.knowledge-card h3 {
+  font-family: var(--font-zh);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.knowledge-card .sub {
+  font-family: var(--font-zh);
+  font-size: 14px;
+  color: var(--ink-mute);
+  margin-bottom: 22px;
+}
+.knowledge-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  font-family: var(--font-zh);
+  font-size: 14px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--ink);
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: default;
+  border: 1px solid transparent;
+}
+.chip:nth-child(3n+1):hover { background: var(--coral-soft); color: var(--coral-deep); border-color: var(--coral); }
+.chip:nth-child(3n+2):hover { background: var(--forest-soft); color: var(--forest); border-color: var(--forest); }
+.chip:nth-child(3n):hover { background: var(--mustard-soft); color: #8A6210; border-color: var(--mustard); }
+
+/* ─── Positioning ──────────────────────────────────── */
+.bridge {
+  display: grid;
+  grid-template-columns: 1fr 56px 1.15fr 56px 1fr;
+  gap: 0;
+  align-items: stretch;
+  margin-bottom: 48px;
+  position: relative;
+}
+.bridge-card {
+  background: var(--bg-card);
+  border-radius: 22px;
+  padding: 28px 26px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.bridge-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.bridge-card-tag {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-family: var(--font-zh);
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.bridge-card.source .bridge-card-tag { background: var(--sky-soft); color: #1E5A6B; }
+.bridge-card.bridge .bridge-card-tag { background: var(--coral-soft); color: var(--coral-deep); }
+.bridge-card.dest .bridge-card-tag { background: var(--forest-soft); color: var(--forest); }
+.bridge-card-title {
+  font-family: var(--font-zh);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+.bridge-card ul {
+  list-style: none;
+  font-family: var(--font-zh);
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.bridge-card ul li {
+  padding: 7px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bridge-card ul li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  flex-shrink: 0;
+}
+.bridge-card.bridge {
+  background: linear-gradient(160deg, var(--coral) 0%, var(--coral-deep) 100%);
+  border-color: var(--coral);
+  box-shadow: var(--shadow-coral);
+  transform: translateY(-8px);
+}
+.bridge-card.bridge:hover {
+  transform: translateY(-12px);
+}
+.bridge-card.bridge .bridge-card-tag {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+.bridge-card.bridge .bridge-card-title { color: #fff; }
+.bridge-card.bridge ul { color: rgba(255, 255, 255, 0.92); }
+.bridge-card.bridge ul li::before {
+  background: rgba(255, 255, 255, 0.7);
+}
+.bridge-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.bridge-arrow svg {
+  width: 100%;
+  height: auto;
+  max-width: 56px;
+}
+.bridge-arrow path {
+  stroke: var(--coral);
+  stroke-width: 2.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 5 6;
+}
+.bridge-arrow .arrowhead { fill: var(--coral); stroke: none; }
+
+.positioning-note {
+  background: var(--bg-card);
+  border-radius: 22px;
+  padding: 32px 36px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+.positioning-note-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--mustard-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: #8A6210;
+}
+.positioning-note-text {
+  font-family: var(--font-zh);
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--ink-soft);
+}
+.positioning-note-text p {
+  margin-bottom: 14px;
+}
+.positioning-note-text p:last-child { margin-bottom: 0; }
+.positioning-note-text strong {
+  color: var(--ink);
+  font-weight: 600;
+  background: var(--coral-soft);
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+/* ─── Features ─────────────────────────────────────── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.feature {
+  background: var(--bg-card);
+  border-radius: 22px;
+  padding: 32px 28px 28px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+.feature:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.feature-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+.feature:nth-child(1) .feature-badge { background: var(--coral-soft); color: var(--coral-deep); }
+.feature:nth-child(2) .feature-badge { background: var(--forest-soft); color: var(--forest); }
+.feature:nth-child(3) .feature-badge { background: var(--mustard-soft); color: #8A6210; }
+.feature:nth-child(4) .feature-badge { background: var(--sky-soft); color: #1E5A6B; }
+.feature:nth-child(5) .feature-badge { background: var(--lavender-soft); color: #5E4D8A; }
+.feature:nth-child(6) .feature-badge { background: var(--coral-soft); color: var(--coral-deep); }
+.feature:nth-child(7) .feature-badge { background: var(--mustard-soft); color: #8A6210; }
+.feature:nth-child(8) .feature-badge { background: var(--forest-soft); color: var(--forest); }
+.feature:nth-child(9) .feature-badge { background: var(--sky-soft); color: #1E5A6B; }
+.feature h3 {
+  font-family: var(--font-zh);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.feature p {
+  font-family: var(--font-zh);
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  flex: 1;
+}
+.feature-tags {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border);
+}
+.feature-tag {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--ink-mute);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* ─── Use Cases ────────────────────────────────────── */
+.usecases-block {
+  background: var(--bg-card);
+  border-radius: 28px;
+  padding: 48px 48px 40px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+.usecases-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 32px;
+}
+.usecases-list li {
+  padding: 18px 0;
+  border-bottom: 1px dashed var(--border);
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
+  align-items: start;
+  font-family: var(--font-zh);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink);
+  transition: padding-left 0.2s;
+}
+.usecases-list li:hover { padding-left: 6px; }
+.usecases-list li:nth-last-child(2),
+.usecases-list li:last-child { border-bottom: none; }
+.usecases-list li .check {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--forest-soft);
+  color: var(--forest);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.usecases-list li .check svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ─── Pipeline ─────────────────────────────────────── */
+.pipeline {
+  background: var(--bg-deep);
+  color: #fff;
+  padding: 96px 0;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+}
+.pipeline::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 107, 71, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.pipeline .section-eyebrow {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--mustard);
+}
+.pipeline .section-title { color: #fff; }
+.pipeline .section-sub { color: rgba(255, 255, 255, 0.72); }
+
+.pipeline-flow {
+  display: grid;
+  grid-template-columns: 1fr 48px 1fr 48px 1fr;
+  align-items: stretch;
+  margin-top: 16px;
+}
+.pipeline-stage {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 22px;
+  padding: 30px 28px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s;
+}
+.pipeline-stage:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--coral);
+  transform: translateY(-4px);
+}
+.pipeline-stage-num {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 107, 71, 0.18);
+  color: #FFB89A;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 0.02em;
+}
+.pipeline-stage h4 {
+  font-family: var(--font-zh);
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 18px;
+  letter-spacing: -0.01em;
+}
+.pipeline-stage ul {
+  list-style: none;
+  font-family: var(--font-zh);
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.85);
+}
+.pipeline-stage ul li {
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+}
+.pipeline-stage ul li:last-child { border-bottom: none; }
+.pipeline-stage ul li::before {
+  content: '→';
+  color: var(--coral);
+  font-weight: 600;
+  font-size: 14px;
+}
+.pipeline-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  color: var(--coral);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* ─── CTA ──────────────────────────────────────────── */
+.cta {
+  padding: 96px 0 88px;
+  position: relative;
+}
+.cta-card {
+  background: linear-gradient(160deg, #FFF7F2 0%, var(--coral-soft) 100%);
+  border-radius: 32px;
+  padding: 64px 56px;
+  border: 1.5px solid var(--coral-soft);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+.cta-card::before {
+  content: '';
+  position: absolute;
+  top: -150px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 107, 71, 0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cta-card::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(245, 210, 111, 0.22) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cta-card-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+}
+.cta-card .section-eyebrow {
+  background: rgba(255, 107, 71, 0.18);
+  color: var(--coral-deep);
+  margin-bottom: 24px;
+}
+.cta-headline {
+  font-family: var(--font-zh);
+  font-size: clamp(32px, 4.4vw, 56px);
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 24px;
+  letter-spacing: -0.018em;
+}
+.cta-headline .accent {
+  color: var(--coral);
+  position: relative;
+  display: inline-block;
+}
+.cta-lede {
+  font-family: var(--font-zh);
+  font-size: 17px;
+  line-height: 1.78;
+  color: var(--ink-soft);
+  max-width: 760px;
+  margin-bottom: 36px;
+}
+.cta-lede strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.cta-checklist {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 28px;
+  margin-bottom: 44px;
+  padding: 28px 32px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.cta-checklist li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-zh);
+  font-size: 15px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.cta-checklist li::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--coral);
+  flex-shrink: 0;
+  margin-top: 2px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9.5l3 3 5-6'/%3E%3C/svg%3E");
+  background-size: contain;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ─── Footer ───────────────────────────────────────── */
+footer {
+  padding: 40px 0 56px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-zh);
+  font-size: 13px;
+  color: var(--ink-mute);
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.footer-inner > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.footer-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+/* ─── Reveal ───────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Responsive ───────────────────────────────────── */
+@media (max-width: 1024px) {
+  .wrap { padding: 0 24px; }
+  .why-grid { grid-template-columns: 1fr; gap: 36px; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .usecases-list { grid-template-columns: 1fr; gap: 0; }
+  .bridge {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .bridge-card.bridge { transform: none; }
+  .bridge-arrow {
+    transform: rotate(90deg);
+    height: 40px;
+    margin: -8px 0;
+  }
+  .pipeline-flow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .pipeline-arrow {
+    transform: rotate(90deg);
+    height: 28px;
+  }
+  .trust-strip { grid-template-columns: repeat(2, 1fr); }
+  .cta-card { padding: 48px 36px; }
+  .positioning-note { grid-template-columns: 1fr; gap: 16px; }
+}
+@media (max-width: 640px) {
+  section { padding: 72px 0; }
+  .hero { padding: 56px 0 64px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .nav-cta { padding: 8px 14px; font-size: 12.5px; }
+  .trust-strip { grid-template-columns: 1fr; }
+  .cta-checklist { grid-template-columns: 1fr; padding: 22px 22px; }
+  .cta-card { padding: 36px 24px; }
+  .usecases-block { padding: 32px 24px 24px; }
+  .feature { padding: 28px 24px 24px; }
+  .bubble-quote { padding: 24px 26px; font-size: 17px; }
+  .knowledge-card { padding: 26px 22px; }
+  .pipeline-stage { padding: 26px 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .hero-eyebrow .dot { animation: none; }
+  .hero h1 .underline svg path { animation: none; stroke-dashoffset: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand">
+      <span class="brand-mark">D</span>
+      <span class="brand-text">
+        Domino Knowledge Export
+        <small>知識資料導出工具</small>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="#why">為什麼</a>
+      <a href="#positioning">怎麼定位</a>
+      <a href="#features">產品特色</a>
+      <a href="#use-cases">適用情境</a>
+      <a href="#contact" class="nav-cta">聊聊吧 →</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      <span>Notes/Domino × 企業 AI · 2026</span>
+    </div>
+    <h1>
+      讓多年累積的<br>
+      <span class="underline">
+        Domino 知識
+        <svg viewBox="0 0 400 18" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M4,12 Q80,4 200,9 T396,8" />
+        </svg>
+      </span>，<br>
+      輕鬆進入 AI 應用流程。
+    </h1>
+    <p class="hero-lede">
+      不用大改既有系統，也不用重建文件 — 從導出開始，把 Domino 多年累積的知識、文件與附件，<strong>逐步交給企業 AI、LLM 應用、Domino IQ 或既有 AI 架構使用</strong>。
+    </p>
+    <div class="hero-buttons">
+      <a href="#contact" class="btn btn-primary">
+        <span>預約 30 分鐘聊聊</span>
+        <span class="arrow">→</span>
+      </a>
+      <a href="#features" class="btn btn-secondary">
+        看看可以做什麼
+      </a>
+    </div>
+
+    <div class="trust-strip">
+      <div class="trust-item">
+        <div class="trust-icon coral">✦</div>
+        <div class="trust-label">適用版本</div>
+        <div class="trust-value">Domino 6.0+</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon forest">◆</div>
+        <div class="trust-label">系統異動</div>
+        <div class="trust-value">不改既有 AP</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon mustard">▲</div>
+        <div class="trust-label">導出範圍</div>
+        <div class="trust-value">4 種模式</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon sky">●</div>
+        <div class="trust-label">更新方式</div>
+        <div class="trust-value">支援增量</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 / Why -->
+<section id="why">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="section-eyebrow coral"><span class="num">01</span><span>為什麼需要</span></div>
+      <h2 class="section-title">AI 應用要做得好，<br>關鍵在<span class="accent">資料能不能被讀取</span>。</h2>
+      <p class="section-sub">許多企業真正有價值的資料，並不在雲端或新系統裡 — 而是長年累積在 Notes/Domino 系統中。</p>
+    </div>
+
+    <div class="why-grid">
+      <div class="why-prose reveal">
+        <p>近年來，許多企業開始導入生成式 AI、地端 LLM 或內部知識助理。但對長期使用 Notes/Domino 的企業而言，大量關鍵資料仍保存在 Domino 資料庫中。</p>
+        <div class="bubble-quote">
+          <span class="label">Our Take</span>
+          要讓 AI 使用這些資料，更實際的做法是：先建立一個<strong style="color: var(--coral); font-weight: 700;">穩定、可設定、可控管</strong>的 Domino 資料導出機制。
+        </div>
+        <p>不必立即重建既有系統，也不需大幅修改 Domino 應用程式設計。讓多年累積的知識，在保留既有系統穩定運作的前提下，逐步進入企業 AI 應用流程。</p>
+      </div>
+
+      <div class="knowledge-card reveal">
+        <h3>哪些資料適合導出？</h3>
+        <p class="sub">長年累積在 Domino 中的關鍵企業知識</p>
+        <div class="knowledge-chips">
+          <span class="chip">企業知識文件</span>
+          <span class="chip">KM 文件</span>
+          <span class="chip">作業規範與 SOP</span>
+          <span class="chip">內部公告</span>
+          <span class="chip">流程申請紀錄</span>
+          <span class="chip">技術文件</span>
+          <span class="chip">附件檔案</span>
+          <span class="chip">表格式資料</span>
+          <span class="chip">長期累積的業務知識</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 / Positioning -->
+<section id="positioning">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="section-eyebrow forest"><span class="num">02</span><span>互補定位</span></div>
+      <h2 class="section-title">和 Domino IQ、企業<br>既有 AI 架構，<span class="accent-forest">互相補位</span>。</h2>
+      <p class="section-sub">本工具不是要取代任何 AI 架構 — 而是 Domino 資料與企業 AI 應用之間的橋接層。</p>
+    </div>
+
+    <div class="bridge reveal">
+      <div class="bridge-card source">
+        <span class="bridge-card-tag">SOURCE · 來源</span>
+        <div class="bridge-card-title">Notes/Domino</div>
+        <ul>
+          <li>企業 KM、SOP</li>
+          <li>流程申請紀錄</li>
+          <li>技術文件、附件</li>
+          <li>長年累積資料</li>
+        </ul>
+      </div>
+      <div class="bridge-arrow" aria-hidden="true">
+        <svg viewBox="0 0 56 80" preserveAspectRatio="none">
+          <path d="M2,40 Q14,30 28,40 T54,40" />
+          <polygon class="arrowhead" points="50,36 56,40 50,44" />
+        </svg>
+      </div>
+      <div class="bridge-card bridge">
+        <span class="bridge-card-tag">★ BRIDGE · 本工具</span>
+        <div class="bridge-card-title">Domino 知識資料導出工具</div>
+        <ul>
+          <li>文件內容整理</li>
+          <li>附件分別匯出</li>
+          <li>增量更新比對</li>
+          <li>可設定導出範圍</li>
+        </ul>
+      </div>
+      <div class="bridge-arrow" aria-hidden="true">
+        <svg viewBox="0 0 56 80" preserveAspectRatio="none">
+          <path d="M2,40 Q14,50 28,40 T54,40" />
+          <polygon class="arrowhead" points="50,36 56,40 50,44" />
+        </svg>
+      </div>
+      <div class="bridge-card dest">
+        <span class="bridge-card-tag">DESTINATION · 目的地</span>
+        <div class="bridge-card-title">企業 AI 應用</div>
+        <ul>
+          <li>Domino IQ</li>
+          <li>地端 LLM</li>
+          <li>企業知識助理</li>
+          <li>內部 AI Agent</li>
+          <li>知識檢索流程</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="positioning-note reveal">
+      <div class="positioning-note-icon">i</div>
+      <div class="positioning-note-text">
+        <p>HCL Domino IQ 是 Domino 在企業 AI 應用上的重要發展，協助企業在 Domino 環境中導入更安全、可控的 AI 使用模式。但企業實際導入 AI 時，路線並不一定只有單一選擇 — 有些企業會評估 Domino IQ；有些則已由 AI 部門建置地端 LLM、企業知識助理或內部 AI Agent 等應用架構。</p>
+        <p><strong>本工具的定位，是 Domino 資料與企業 AI 應用之間的橋接層。</strong>不論企業後續採用 Domino IQ，或由內部 AI 團隊使用既有 LLM、知識檢索架構或其他應用，本工具皆可作為前置整理與導出的輔助機制。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 / Features -->
+<section id="features">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="section-eyebrow mustard"><span class="num">03</span><span>產品特色</span></div>
+      <h2 class="section-title">9 項設計原則，<br>來自<span class="accent">實務需求</span>的取捨。</h2>
+      <p class="section-sub">每一項特色，都對應企業在 Domino 與 AI 整合中會遇到的真實情境。</p>
+    </div>
+
+    <div class="features-grid reveal">
+      <article class="feature">
+        <div class="feature-badge">01</div>
+        <h3>不需修改既有應用程式</h3>
+        <p>透過設定方式導出 Domino 資料，不需大幅修改既有 Notes/Domino 應用程式設計，降低導入門檻與系統異動風險。</p>
+        <div class="feature-tags">
+          <span class="feature-tag">low impact</span>
+          <span class="feature-tag">config-driven</span>
+        </div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-badge">02</div>
+        <h3>轉為 AI 程式可讀格式</h3>
+        <p>將 Notes/Domino 文件內容導出為適合 AI 程式讀取的資料格式，協助 AI 團隊後續進行摘要、分類、問答、知識整理或 LLM 應用。</p>
+        <div class="feature-tags">
+          <span class="feature-tag">AI-ready</span>
+          <span class="feature-tag">HTML / Text</span>
+        </div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-badge">03</div>
+        <h3>支援增量更新</h3>
+        <p>依文件更新日期進行比對，後續處理流程僅需針對新增或異動文件進行更新，減少重複處理資料的成本。</p>
+        <div class="feature-tags">
+          <span class="feature-tag">incremental</span>
+          <span class="feature-tag">delta sync</span>
+        </div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-badge">04</div>
+        <h3>系統管理員即可維護</h3>
+        <p>以設定化方式管理資料來源與導出範圍，減少每次調整都需由開發人員修改程式的情況。</p>
+        <div class="feature-tags">
+          <span class="feature-tag">admin-friendly</span>
+          <span class="feature-tag">no-code</span>
+        </div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-badge">05</div>
+        <h3>可選擇資料導出範圍</h3>
+        <p>依資料性質、機密性與應用情境，可指定 View、全部文件、搜尋公式，或指定文件作為導出範圍。</p>
+        <div class="feature-tags">
+          <span class="feature-tag">View</span>
+          <span class="feature-tag">Formula</span>
+          <span class="feature-tag">Selective</span>
+        </div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-badge">06</div>
+        <h3>支援 Domino 6.0+</h3>
+        <p>適用於長期使用 Notes/Domino 的企業環境，協助不同版本的 Domino 資料逐步接軌企業 AI 應用需求。</p>
+        <div class="feature-tags">
+          <span class="feature-tag">legacy-ready</span>
+        </div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-badge">07</div>
+        <h3>文件與附件分別導出</h3>
+        <p>文件內容可轉出為 HTML 網頁格式，附件則可獨立匯出至指定目錄，方便後續由企業 AI 程式或知識系統進一步使用。</p>
+        <div class="feature-tags">
+          <span class="feature-tag">HTML</span>
+          <span class="feature-tag">attachments</span>
+        </div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-badge">08</div>
+        <h3>提升內容讀取完整性</h3>
+        <p>針對 Notes 文件中常見的表格、小節與內容區塊進行展開與整理，讓 AI 程式能讀取較完整的文件內容。</p>
+        <div class="feature-tags">
+          <span class="feature-tag">section expand</span>
+          <span class="feature-tag">table flatten</span>
+        </div>
+      </article>
+
+      <article class="feature">
+        <div class="feature-badge">09</div>
+        <h3>可依企業需求客製化</h3>
+        <p>依企業既有 Domino 架構、資料庫設計、AI 導入方式與資料治理需求，提供在地化客製調整。</p>
+        <div class="feature-tags">
+          <span class="feature-tag">customizable</span>
+          <span class="feature-tag">in-house</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 04 / Use Cases -->
+<section id="use-cases">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="section-eyebrow sky"><span class="num">04</span><span>適用情境</span></div>
+      <h2 class="section-title">這些情境，<br>都是適合<span class="accent">聊聊看</span>的時機。</h2>
+      <p class="section-sub">不論你的企業在 AI 導入旅程上的哪個階段，只要 Domino 資料還沒被有效利用，都值得評估。</p>
+    </div>
+
+    <div class="usecases-block reveal">
+      <ul class="usecases-list">
+        <li>
+          <span class="check"><svg viewBox="0 0 14 14"><path d="M3 7.5l3 3 5-6"/></svg></span>
+          <span>企業已導入或準備導入地端 LLM。</span>
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 14 14"><path d="M3 7.5l3 3 5-6"/></svg></span>
+          <span>AI 部門需要讀取 Domino 既有知識資料。</span>
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 14 14"><path d="M3 7.5l3 3 5-6"/></svg></span>
+          <span>希望將 Domino KM 文件提供給 AI 程式使用。</span>
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 14 14"><path d="M3 7.5l3 3 5-6"/></svg></span>
+          <span>希望在不修改既有 Domino AP 的情況下進行 AI 資料準備。</span>
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 14 14"><path d="M3 7.5l3 3 5-6"/></svg></span>
+          <span>希望將 Domino 文件與附件整理成可供後續處理的資料來源。</span>
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 14 14"><path d="M3 7.5l3 3 5-6"/></svg></span>
+          <span>希望逐步評估 Domino 資料與企業 AI 應用的整合方式。</span>
+        </li>
+        <li>
+          <span class="check"><svg viewBox="0 0 14 14"><path d="M3 7.5l3 3 5-6"/></svg></span>
+          <span>希望搭配 Domino IQ 或既有企業 AI 架構，擴大 Domino 知識資料的使用範圍。</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 05 / Pipeline -->
+<section id="extensions" class="pipeline">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="section-eyebrow"><span class="num">05</span><span>延伸應用</span></div>
+      <h2 class="section-title" style="color: #fff;">導出之後，<br>能接續做什麼？</h2>
+      <p class="section-sub" style="color: rgba(255,255,255,0.72);">本工具負責資料導出與內容整理；後續的應用層由企業 AI 架構接手。</p>
+    </div>
+
+    <div class="pipeline-flow reveal">
+      <div class="pipeline-stage">
+        <span class="pipeline-stage-num">STAGE 01 · SOURCE</span>
+        <h4>本工具負責</h4>
+        <ul>
+          <li>Domino 資料導出</li>
+          <li>文件內容整理</li>
+          <li>附件匯出</li>
+          <li>增量更新比對</li>
+        </ul>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-stage">
+        <span class="pipeline-stage-num">STAGE 02 · PIPELINE</span>
+        <h4>資料準備層</h4>
+        <ul>
+          <li>RAG 資料準備</li>
+          <li>向量資料庫建置</li>
+          <li>文件分類與切分</li>
+          <li>內容整理與清洗</li>
+        </ul>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-stage">
+        <span class="pipeline-stage-num">STAGE 03 · APPLICATION</span>
+        <h4>AI 應用層</h4>
+        <ul>
+          <li>LLM 文件摘要</li>
+          <li>知識問答</li>
+          <li>企業知識助理</li>
+          <li>內部 AI Agent</li>
+          <li>知識檢索流程</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 / CTA -->
+<section id="contact" class="cta">
+  <div class="wrap">
+    <div class="cta-card reveal">
+      <div class="cta-card-inner">
+        <div class="section-eyebrow"><span class="num">06</span><span>歡迎聊聊</span></div>
+        <h2 class="cta-headline">
+          讓 Domino 不只是既有系統，<br>
+          更成為企業 <span class="accent">AI 時代</span><br>
+          的重要知識來源。
+        </h2>
+        <p class="cta-lede">
+          若你的企業正在評估生成式 AI、地端 LLM、企業知識助理、<strong>Domino IQ</strong>，或既有 Domino 資料整合應用，歡迎與我們聊聊。30 分鐘的會議，幫你釐清導入的可行性與後續銜接方式。
+        </p>
+        <ul class="cta-checklist">
+          <li>既有 Domino 資料庫是否適合導出</li>
+          <li>哪些文件與附件可作為 AI 資料來源</li>
+          <li>如何設定合適的資料導出範圍</li>
+          <li>如何降低對既有系統的影響</li>
+          <li>如何配合企業 AI 團隊或 Domino IQ 應用進行後續規劃</li>
+          <li>POC 與評估專案的時程與資源規劃</li>
+        </ul>
+        <div class="cta-buttons">
+          <a href="mailto:contact@example.com?subject=Domino%20%E7%9F%A5%E8%AD%98%E8%B3%87%E6%96%99%E5%B0%8E%E5%87%BA%E5%B7%A5%E5%85%B7%20-%20%E8%AB%AE%E8%A9%A2" class="btn btn-primary">
+            <span>預約 30 分鐘聊聊</span>
+            <span class="arrow">→</span>
+          </a>
+          <a href="#features" class="btn btn-secondary">
+            再看一次產品特色
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div><span class="footer-dot"></span> © 2026 Domino Knowledge Export Tool</div>
+    <div>Notes / Domino → Enterprise AI</div>
+    <div>Made with ♥ for long-running Domino environments</div>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
