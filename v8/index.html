@@ -121,18 +121,23 @@ img { max-width: 100%; }
 .brand-mark {
   width: 44px;
   height: 44px;
-  background: var(--lavender);
+  background: var(--cream);
   border: var(--border-thick);
   border-radius: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
-  font-size: 22px;
-  color: var(--ink);
   box-shadow: 4px 4px 0 0 var(--shadow);
   transform: rotate(-3deg);
   transition: transform 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  overflow: hidden;
+  padding: 4px;
+}
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 .brand:hover .brand-mark { transform: rotate(3deg) scale(1.05); }
 .brand-text {
@@ -904,7 +909,7 @@ footer {
 <header class="topbar">
   <div class="topbar-inner">
     <a href="#top" class="brand">
-      <span class="brand-mark">D</span>
+      <span class="brand-mark"><img src="../assets/CTIlogo.gif" alt="Chuntai (CTI)"></span>
       <span class="brand-text">
         Domino Knowledge Export
         <small>知識資料導出工具</small>
@@ -1181,7 +1186,7 @@ footer {
 
 <footer>
   <div class="footer-inner">
-    <div>© 2026 Domino Knowledge Export Tool</div>
+    <div>© 2026 Chuntai (CTI) · Domino Knowledge Export Tool</div>
     <div>Notes / Domino → Enterprise AI</div>
     <div>v8 · pastel y2k edition</div>
   </div>
