@@ -784,10 +784,13 @@ h1.title .red{
 .section-num .slash{
   background:var(--ink);
   color:var(--accent);
-  padding:0 0.02em;
-  box-decoration-break:clone;
-  -webkit-box-decoration-break:clone;
+  padding:0;
+  display:inline-block;
+  line-height:1;
+  vertical-align:baseline;
+  margin:0;
 }
+.section-num{overflow:hidden}
 .brutal-list li::before{
   background:var(--ink);
   color:var(--accent);
