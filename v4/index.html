@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Domino 知識資料導出工具 — 釋放企業既有 Domino 文件的知識價值</title>
+<meta name="description" content="協助企業在不修改既有 Domino 應用程式設計的前提下，將 Notes/Domino 文件內容與附件導出為企業 AI 程式、LLM 應用或知識檢索流程可讀取的資料來源。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F8F5EC;
+  --bg-elev: #FDFBF4;
+  --bg-deep: #EFEADC;
+
+  --ink: #14140F;
+  --ink-soft: #2F2D26;
+  --ink-mute: #6B655D;
+  --ink-faint: #9F9A91;
+
+  --accent: #2A5751;
+  --accent-deep: #1F4640;
+  --accent-soft: #D8E3DF;
+  --accent-glow: rgba(42, 87, 81, 0.08);
+
+  --rule: rgba(20, 20, 15, 0.1);
+  --rule-strong: rgba(20, 20, 15, 0.32);
+
+  --font-display: 'Familjen Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-zh: 'Noto Sans TC', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-zh);
+  font-size: 17px;
+  line-height: 1.78;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+img { max-width: 100%; }
+
+/* ─── Top bar ──────────────────────────────────────── */
+.topbar {
+  position: sticky;
+  top: 0;
+  background: rgba(248, 245, 236, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 50;
+  border-bottom: 1px solid var(--rule);
+}
+.topbar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.brand-mark {
+  width: 30px;
+  height: 30px;
+  background: var(--ink);
+  color: var(--bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
+.brand-text {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+}
+.brand-text small {
+  display: block;
+  font-family: var(--font-zh);
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-weight: 400;
+  margin-top: -1px;
+}
+.topbar-cta {
+  font-family: var(--font-zh);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--bg);
+  background: var(--ink);
+  padding: 9px 18px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+.topbar-cta:hover { background: var(--accent); }
+
+/* ─── Page layout ──────────────────────────────────── */
+.page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 64px 40px 96px;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 80px;
+}
+.toc {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+  font-family: var(--font-zh);
+  font-size: 13.5px;
+  padding-top: 6px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+.toc-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.toc-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.toc-list li a {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  color: var(--ink-mute);
+  text-decoration: none;
+  transition: color 0.2s;
+  align-items: baseline;
+  line-height: 1.5;
+}
+.toc-list li a:hover {
+  color: var(--accent);
+}
+.toc-list li a.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+.toc-num {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  min-width: 24px;
+  padding-top: 1px;
+}
+.toc-list li a.active .toc-num { color: var(--accent); }
+
+.content {
+  max-width: 760px;
+  font-family: var(--font-zh);
+}
+
+/* ─── Hero ─────────────────────────────────────────── */
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--accent);
+  width: fit-content;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+h1.title {
+  font-family: var(--font-zh), var(--font-display);
+  font-size: clamp(40px, 5.6vw, 72px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+
+h2.subtitle {
+  font-family: var(--font-zh);
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin-bottom: 56px;
+  letter-spacing: -0.005em;
+  max-width: 700px;
+}
+
+/* ─── Intro paragraphs ────────────────────────────── */
+.lead-prose {
+  margin-bottom: 56px;
+}
+.lead-prose p {
+  font-size: 18px;
+  line-height: 1.85;
+  color: var(--ink-soft);
+  margin-bottom: 22px;
+  max-width: 720px;
+}
+.lead-prose p strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Pull-quote / emphasis */
+.emphasis-block {
+  margin: 36px 0;
+  padding: 28px 32px;
+  background: var(--bg-elev);
+  border-left: 3px solid var(--accent);
+  font-family: var(--font-zh);
+  font-size: 22px;
+  line-height: 1.55;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.emphasis-block-soft {
+  margin: 32px 0;
+  padding: 22px 28px;
+  background: var(--accent-soft);
+  font-family: var(--font-zh);
+  font-size: 19px;
+  line-height: 1.55;
+  font-weight: 600;
+  color: var(--accent-deep);
+  letter-spacing: -0.005em;
+  border-radius: 2px;
+}
+
+/* The "因此，我們推出" reveal moment */
+.lead-bridge {
+  margin: 64px 0 40px;
+  font-family: var(--font-zh);
+  font-size: 17px;
+  color: var(--ink-mute);
+  letter-spacing: 0.02em;
+}
+.product-reveal {
+  margin: 0 0 64px;
+  padding: 56px 0 56px;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+.product-reveal h1 {
+  font-family: var(--font-zh), var(--font-display);
+  font-size: clamp(40px, 6.2vw, 80px);
+  line-height: 1.06;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+}
+
+/* ─── Section base ─────────────────────────────────── */
+.section {
+  padding-top: 96px;
+  margin-bottom: 24px;
+  scroll-margin-top: 96px;
+}
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--rule);
+  margin: 0;
+  border: none;
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.14em;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-transform: uppercase;
+}
+.section-num::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+.section h2.section-title {
+  font-family: var(--font-zh), var(--font-display);
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.18;
+  font-weight: 700;
+  letter-spacing: -0.014em;
+  color: var(--ink);
+  margin-bottom: 36px;
+}
+
+.section p {
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--ink-soft);
+  margin-bottom: 22px;
+  max-width: 720px;
+}
+.section p strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Bullet lists */
+.section ul {
+  list-style: none;
+  margin: 22px 0 28px;
+  padding: 0;
+}
+.section ul li {
+  padding: 11px 0 11px 24px;
+  position: relative;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-zh);
+}
+.section ul li:last-child { border-bottom: none; }
+.section ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22px;
+  width: 12px;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* Numbered features (1-9) */
+.feature-item {
+  margin-top: 56px;
+  padding-top: 44px;
+  border-top: 1px solid var(--rule);
+}
+.feature-item:first-child {
+  margin-top: 36px;
+  padding-top: 0;
+  border-top: none;
+}
+.feature-item-head {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 28px;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+.feature-num-large {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.feature-item h3 {
+  font-family: var(--font-zh);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.feature-item-body {
+  padding-left: 112px;
+}
+.feature-item-body p {
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--ink-soft);
+}
+.feature-item-body ul {
+  margin-top: 16px;
+}
+
+/* Inline emphasis paragraph */
+.bold-line {
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  margin: 16px 0;
+  font-size: 18px;
+}
+
+/* ─── Closing block (dual H2) ──────────────────────── */
+.closing-block {
+  margin-top: 96px;
+  padding: 88px 0 80px;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+.closing-block .closing-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.14em;
+  margin-bottom: 36px;
+  text-transform: uppercase;
+}
+.closing-block h2 {
+  font-family: var(--font-zh), var(--font-display);
+  font-size: clamp(30px, 4.4vw, 56px);
+  line-height: 1.16;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  color: var(--ink);
+}
+.closing-block h2:first-of-type { margin-bottom: 16px; }
+.closing-block .closing-prose {
+  margin-top: 48px;
+}
+.closing-block .closing-prose p {
+  font-size: 18px;
+  line-height: 1.85;
+  color: var(--ink-soft);
+  margin-bottom: 22px;
+  max-width: 720px;
+}
+
+/* ─── Contact section ──────────────────────────────── */
+.contact {
+  margin-top: 96px;
+  padding: 64px 0;
+}
+.contact-list {
+  margin-top: 28px !important;
+}
+.contact-cta {
+  margin-top: 48px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 17px 28px;
+  font-family: var(--font-zh);
+  font-size: 15.5px;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: -0.005em;
+  transition: all 0.25s ease;
+  border: none;
+  cursor: pointer;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+}
+.btn-primary:hover {
+  background: var(--accent-deep);
+}
+.btn-primary .arrow {
+  transition: transform 0.25s ease;
+}
+.btn-primary:hover .arrow {
+  transform: translateX(5px);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  padding: 15.5px 26.5px;
+}
+.btn-secondary:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* ─── Footer ───────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--rule);
+  margin-top: 96px;
+  padding: 36px 40px 56px;
+  font-family: var(--font-zh);
+  font-size: 12.5px;
+  color: var(--ink-mute);
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* ─── Reveal animations ─────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Responsive ───────────────────────────────────── */
+@media (max-width: 1100px) {
+  .page {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 48px 32px 80px;
+  }
+  .toc { display: none; }
+  .content { max-width: 760px; }
+  .feature-item-head { grid-template-columns: 60px 1fr; gap: 20px; }
+  .feature-num-large { font-size: 42px; }
+  .feature-item-body { padding-left: 80px; }
+}
+@media (max-width: 720px) {
+  .page { padding: 36px 24px 64px; }
+  .topbar-inner { padding: 16px 24px; }
+  .product-reveal { padding: 36px 0 36px; }
+  .closing-block { padding: 56px 0 48px; }
+  .feature-item-head { grid-template-columns: 1fr; gap: 8px; }
+  .feature-num-large { font-size: 32px; }
+  .feature-item-body { padding-left: 0; }
+  .emphasis-block { padding: 22px 24px; font-size: 19px; }
+  .topbar-cta { padding: 8px 14px; font-size: 12.5px; }
+  .brand-text small { display: none; }
+  .section { padding-top: 64px; }
+  .closing-block { margin-top: 64px; }
+  .contact { margin-top: 64px; padding: 48px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#top" class="brand">
+      <span class="brand-mark">D</span>
+      <span class="brand-text">
+        Domino Knowledge Export
+        <small>知識資料導出工具</small>
+      </span>
+    </a>
+    <a href="#contact" data-mailto class="topbar-cta">聯繫我們</a>
+  </div>
+</header>
+
+<!-- Page -->
+<div class="page" id="top">
+
+  <!-- Sticky TOC -->
+  <aside class="toc">
+    <div class="toc-label">目次 ─ Contents</div>
+    <ul class="toc-list">
+      <li><a href="#why"><span class="toc-num">01</span><span>為什麼需要</span></a></li>
+      <li><a href="#positioning"><span class="toc-num">02</span><span>互補定位</span></a></li>
+      <li><a href="#features"><span class="toc-num">03</span><span>產品特色</span></a></li>
+      <li><a href="#use-cases"><span class="toc-num">04</span><span>適用情境</span></a></li>
+      <li><a href="#extensions"><span class="toc-num">05</span><span>延伸應用</span></a></li>
+      <li><a href="#closing"><span class="toc-num">06</span><span>結語</span></a></li>
+      <li><a href="#contact"><span class="toc-num">07</span><span>歡迎聯繫</span></a></li>
+    </ul>
+  </aside>
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- Hero -->
+    <div class="hero-eyebrow">Domino × Enterprise AI · 2026</div>
+
+    <h1 class="title">Domino 知識資料導出工具</h1>
+    <h2 class="subtitle">釋放企業既有 Domino 文件的知識價值，成為 AI 程式可讀取的資料來源</h2>
+
+    <div class="lead-prose">
+      <p>企業開始導入生成式 AI、地端 LLM 或內部知識應用時，常會遇到一個關鍵問題：</p>
+      <div class="emphasis-block">
+        企業真正有價值的知識資料，並不一定在雲端或新系統裡，而是長年累積在既有的 Notes/Domino 系統中。
+      </div>
+      <p>許多企業多年來透過 Notes/Domino 建立 KM、流程文件、公告、技術文件、表單紀錄與各類內部知識資料。這些資料對企業極具價值，但在 AI 導入過程中，往往缺少一個安全、可控，且不影響既有系統的資料導出方式。</p>
+      <p class="lead-bridge">因此，我們推出：</p>
+    </div>
+
+    <div class="product-reveal">
+      <h1>Domino 知識資料導出工具</h1>
+    </div>
+
+    <div class="lead-prose">
+      <p>協助企業在<strong>不修改既有 Domino 應用程式設計</strong>的前提下，將 Notes/Domino 文件內容與附件導出為企業 AI 程式、LLM 應用或知識檢索流程可讀取的資料來源。</p>
+      <p>本工具著重於 Domino 資料導出、文件內容整理、附件匯出與增量更新，讓企業 AI 團隊可在既有 AI 架構下，進一步使用 Domino 長年累積的知識資產。</p>
+    </div>
+
+    <!-- 01 / Why -->
+    <hr class="section-divider">
+    <section class="section" id="why">
+      <div class="section-num">§ 01 ─ 背景</div>
+      <h2 class="section-title">為什麼需要 Domino 知識資料導出工具？</h2>
+
+      <p>近年來，許多企業開始導入生成式 AI、地端 AI 或內部知識助理，但 AI 應用的成效往往取決於一件事：</p>
+
+      <div class="emphasis-block">
+        企業內部資料是否能被 AI 讀取、整理與使用。
+      </div>
+
+      <p>對許多長期使用 Notes/Domino 的企業而言，大量關鍵資料仍保存在 Domino 資料庫中。這些資料可能包含：</p>
+
+      <ul>
+        <li>企業知識文件</li>
+        <li>KM 文件</li>
+        <li>作業規範與 SOP</li>
+        <li>內部公告</li>
+        <li>流程申請紀錄</li>
+        <li>技術文件</li>
+        <li>附件檔案</li>
+        <li>表格式資料</li>
+        <li>長期累積的業務知識</li>
+      </ul>
+
+      <p>若要讓 AI 使用這些資料，通常不一定需要立即重建既有系統，也不一定需要大幅修改 Domino 應用程式。</p>
+
+      <p>更實際的做法是：</p>
+      <div class="emphasis-block-soft">
+        先建立一個穩定、可設定、可控管範圍的 Domino 資料導出機制。
+      </div>
+    </section>
+
+    <!-- 02 / Positioning -->
+    <hr class="section-divider">
+    <section class="section" id="positioning">
+      <div class="section-num">§ 02 ─ 互補定位</div>
+      <h2 class="section-title">與 Domino IQ 及企業既有 AI 架構互補</h2>
+
+      <p>HCL Domino IQ 是 Domino 在企業 AI 應用上的重要發展，協助企業在 Domino 環境中導入更安全、可控的 AI 使用模式。</p>
+      <p>然而，企業在實際導入 AI 時，常見情境不一定只有單一路線。有些企業會評估 Domino IQ，有些企業則已由 AI 部門建置地端 LLM、企業知識助理、內部 AI Agent 或其他 AI 應用架構。</p>
+      <p>Domino 知識資料導出工具的定位，是協助企業將既有 Notes/Domino 文件與附件整理成 AI 程式可讀取的資料來源，作為 Domino 資料與企業 AI 應用之間的橋接工具。</p>
+      <p>不論企業後續採用 Domino IQ，或是由內部 AI 團隊使用既有 LLM、知識檢索架構或其他 AI 應用，本工具皆可作為 Domino 知識資料前置整理與導出的輔助機制。</p>
+    </section>
+
+    <!-- 03 / Features -->
+    <hr class="section-divider">
+    <section class="section" id="features">
+      <div class="section-num">§ 03 ─ 產品特色</div>
+      <h2 class="section-title">產品特色</h2>
+
+      <article class="feature-item">
+        <div class="feature-item-head">
+          <div class="feature-num-large">1.</div>
+          <h3>不需修改既有應用程式</h3>
+        </div>
+        <div class="feature-item-body">
+          <p>透過設定方式導出 Domino 資料，不需大幅修改既有 Notes/Domino 應用程式設計，降低導入門檻與系統異動風險。</p>
+        </div>
+      </article>
+
+      <article class="feature-item">
+        <div class="feature-item-head">
+          <div class="feature-num-large">2.</div>
+          <h3>將 Domino 文件轉為 AI 程式可讀取的資料來源</h3>
+        </div>
+        <div class="feature-item-body">
+          <p>可將 Notes/Domino 文件內容導出為適合 AI 程式讀取的資料格式，協助企業 AI 團隊後續進行摘要、分類、問答、知識整理或其他 LLM 應用。</p>
+        </div>
+      </article>
+
+      <article class="feature-item">
+        <div class="feature-item-head">
+          <div class="feature-num-large">3.</div>
+          <h3>支援增量更新，降低資料維護負擔</h3>
+        </div>
+        <div class="feature-item-body">
+          <p>可依文件更新日期進行比對，讓後續處理流程僅需針對新增或異動文件進行更新，減少重複處理資料的成本。</p>
+        </div>
+      </article>
+
+      <article class="feature-item">
+        <div class="feature-item-head">
+          <div class="feature-num-large">4.</div>
+          <h3>Domino 系統管理員即可維護設定</h3>
+        </div>
+        <div class="feature-item-body">
+          <p>透過設定化方式管理資料來源與導出範圍，減少每次調整都需由開發人員修改程式的情況。</p>
+        </div>
+      </article>
+
+      <article class="feature-item">
+        <div class="feature-item-head">
+          <div class="feature-num-large">5.</div>
+          <h3>可選擇資料導出範圍</h3>
+        </div>
+        <div class="feature-item-body">
+          <p>可依需求指定不同資料導出方式，例如：</p>
+          <ul>
+            <li>指定 View</li>
+            <li>全部文件</li>
+            <li>搜尋公式</li>
+            <li>指定文件</li>
+          </ul>
+          <p>協助企業依照資料性質、機密性與應用情境，選擇合適的導出範圍。</p>
+        </div>
+      </article>
+
+      <article class="feature-item">
+        <div class="feature-item-head">
+          <div class="feature-num-large">6.</div>
+          <h3>支援 Notes/Domino 6.0 以上版本</h3>
+        </div>
+        <div class="feature-item-body">
+          <p>適用於長期使用 Notes/Domino 的企業環境，協助不同版本的 Domino 資料逐步接軌企業 AI 應用需求。</p>
+        </div>
+      </article>
+
+      <article class="feature-item">
+        <div class="feature-item-head">
+          <div class="feature-num-large">7.</div>
+          <h3>文件與附件可分別導出</h3>
+        </div>
+        <div class="feature-item-body">
+          <p>Notes 文件內容可轉出為 HTML 網頁格式，附件則可獨立匯出至指定目錄，方便後續由企業 AI 程式、文件處理流程或知識系統進一步使用。</p>
+        </div>
+      </article>
+
+      <article class="feature-item">
+        <div class="feature-item-head">
+          <div class="feature-num-large">8.</div>
+          <h3>提升 AI 讀取文件內容的完整性</h3>
+        </div>
+        <div class="feature-item-body">
+          <p>針對 Notes 文件中常見的表格、小節與內容區塊，可進行展開與整理，讓 AI 程式能讀取較完整的文件內容，降低資料遺漏的可能性。</p>
+        </div>
+      </article>
+
+      <article class="feature-item">
+        <div class="feature-item-head">
+          <div class="feature-num-large">9.</div>
+          <h3>可依企業需求客製化調整</h3>
+        </div>
+        <div class="feature-item-body">
+          <p>可依企業既有 Domino 架構、資料庫設計、AI 導入方式與資料治理需求，提供在地化客製調整。</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- 04 / Use Cases -->
+    <hr class="section-divider">
+    <section class="section" id="use-cases">
+      <div class="section-num">§ 04 ─ 適用情境</div>
+      <h2 class="section-title">適用情境</h2>
+
+      <p>Domino 知識資料導出工具適合以下情境：</p>
+
+      <ul>
+        <li>企業已導入或準備導入地端 LLM</li>
+        <li>AI 部門需要讀取 Domino 既有知識資料</li>
+        <li>希望將 Domino KM 文件提供給 AI 程式使用</li>
+        <li>希望在不修改既有 Domino AP 的情況下進行 AI 資料準備</li>
+        <li>希望將 Domino 文件與附件整理成可供後續處理的資料來源</li>
+        <li>希望逐步評估 Domino 資料與企業 AI 應用的整合方式</li>
+        <li>希望搭配 Domino IQ 或既有企業 AI 架構，擴大 Domino 知識資料的使用範圍</li>
+      </ul>
+    </section>
+
+    <!-- 05 / Extensions -->
+    <hr class="section-divider">
+    <section class="section" id="extensions">
+      <div class="section-num">§ 05 ─ 延伸應用</div>
+      <h2 class="section-title">可延伸應用方向</h2>
+
+      <p>本工具主要負責 Domino 資料導出與內容整理，企業可依既有 AI 架構進一步應用於：</p>
+
+      <ul>
+        <li>LLM 文件摘要</li>
+        <li>知識問答</li>
+        <li>文件分類</li>
+        <li>內容整理</li>
+        <li>企業知識助理</li>
+        <li>內部 AI Agent</li>
+        <li>知識檢索流程</li>
+        <li>RAG 或向量資料庫建置前的資料準備</li>
+      </ul>
+
+      <p>實際整合方式可依企業 AI 架構與資料治理需求進一步評估。</p>
+    </section>
+
+    <!-- 06 / Closing dual H2 -->
+    <div class="closing-block" id="closing">
+      <div class="closing-num">§ 06 ─ 結語</div>
+      <h2>讓 Domino 不只是既有系統</h2>
+      <h2 style="color: var(--accent);">更成為企業 AI 時代的重要知識資產</h2>
+
+      <div class="closing-prose">
+        <p>Notes/Domino 長年承載企業重要資料與知識流程。<br>在 AI 導入的過程中，這些既有資料不應被忽略，更不一定需要透過大規模重建才能被使用。</p>
+        <p>透過 Domino 知識資料導出工具，企業可在保留既有 Domino 系統穩定運作的前提下，逐步釋放多年累積的 Domino 知識價值，並提供給 AI 程式、LLM 應用、Domino IQ 或企業既有 AI 架構使用。</p>
+      </div>
+    </div>
+
+    <!-- 07 / Contact -->
+    <section class="section contact" id="contact">
+      <div class="section-num">§ 07 ─ 歡迎聯繫</div>
+      <h2 class="section-title">歡迎與我們聯繫</h2>
+
+      <p>若您的企業正在評估生成式 AI、地端 LLM、企業知識助理、Domino IQ 或既有 Domino 資料整合應用，歡迎與我們聯繫。</p>
+
+      <p>我們可協助您評估：</p>
+
+      <ul class="contact-list">
+        <li>既有 Domino 資料庫是否適合導出</li>
+        <li>哪些文件與附件可作為 AI 資料來源</li>
+        <li>如何設定合適的資料導出範圍</li>
+        <li>如何降低對既有系統的影響</li>
+        <li>如何配合企業 AI 團隊或 Domino IQ 應用進行後續規劃</li>
+      </ul>
+
+      <div class="contact-cta">
+        <a href="#" data-mailto class="btn btn-primary">
+          <span>聯繫我們</span>
+          <span class="arrow">→</span>
+        </a>
+        <a href="#features" class="btn btn-secondary">
+          回頂端產品特色
+        </a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>© 2026 Domino Knowledge Export Tool</div>
+    <div>Notes / Domino → Enterprise AI</div>
+    <div>v4 · whitepaper edition</div>
+  </div>
+</footer>
+
+<script src="../config.js"></script>
+<script>
+  // TOC scroll spy
+  const tocLinks = document.querySelectorAll('.toc-list a');
+  const sections = Array.from(document.querySelectorAll('.section, .closing-block, .contact'))
+    .map(el => el.id ? el : el.querySelector('[id]'))
+    .filter(Boolean);
+
+  function updateActive() {
+    const scrollY = window.scrollY + 200;
+    let current = null;
+    sections.forEach(sec => {
+      if (sec.offsetTop <= scrollY) current = sec.id;
+    });
+    tocLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+</script>
+
+</body>
+</html>

@@ -1,11 +1,12 @@
 # Domino 知識資料導出工具
 
-## 讓企業既有 Domino 文件，成為 AI 程式可讀取的知識來源
+## 釋放企業既有 Domino 文件的知識價值，成為 AI 程式可讀取的資料來源
 
 > 🌐 **Live Demo**
 > - **v1** ─ Editorial / 編輯文件風 → <https://bryanhsiao.github.io/domino-km-export-tool/>
 > - **v2** ─ Operations Console / 終端機風 → <https://bryanhsiao.github.io/domino-km-export-tool/v2/>
 > - **v3** ─ Friendly Soft / 暖系現代風 → <https://bryanhsiao.github.io/domino-km-export-tool/v3/>
+> - **v4** ─ Refined Whitepaper / 修飾型長文 → <https://bryanhsiao.github.io/domino-km-export-tool/v4/>
 
 > ⚙️ **設定聯絡 Email**
 > 三版頁面共用根目錄的 [`config.js`](./config.js)。修改其中的 `contactEmail` 與 `emailSubject` 即可同步生效，不需動 HTML：
@@ -31,7 +32,7 @@
 
 協助企業在**不修改既有 Domino 應用程式設計**的前提下，將 Notes/Domino 文件內容與附件導出為企業 AI 程式、LLM 應用或知識檢索流程可讀取的資料來源。
 
-本工具著重於 Domino 資料導出、文件內容整理、附件匯出與增量更新，讓企業 AI 團隊可在既有 AI 架構下，進一步使用 Domino 長年累積的知識資料。
+本工具著重於 Domino 資料導出、文件內容整理、附件匯出與增量更新，讓企業 AI 團隊可在既有 AI 架構下，進一步使用 Domino 長年累積的知識資產。
 
 ---
 
@@ -168,12 +169,12 @@ Domino 知識資料導出工具適合以下情境：
 
 ## 讓 Domino 不只是既有系統
 
-## 更成為企業 AI 時代的重要知識來源
+## 更成為企業 AI 時代的重要知識資產
 
 Notes/Domino 長年承載企業重要資料與知識流程。
 在 AI 導入的過程中，這些既有資料不應被忽略，更不一定需要透過大規模重建才能被使用。
 
-透過 Domino 知識資料導出工具，企業可在保留既有 Domino 系統穩定運作的前提下，逐步將多年累積的 Domino 知識資料，提供給 AI 程式、LLM 應用、Domino IQ 或企業既有 AI 架構使用。
+透過 Domino 知識資料導出工具，企業可在保留既有 Domino 系統穩定運作的前提下，逐步釋放多年累積的 Domino 知識價值，並提供給 AI 程式、LLM 應用、Domino IQ 或企業既有 AI 架構使用。
 
 ---
 
