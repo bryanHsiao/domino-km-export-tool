@@ -790,7 +790,18 @@ h1.title .red{
   vertical-align:baseline;
   margin:0;
 }
-.section-num{overflow:hidden}
+.section-num{white-space:nowrap;overflow:hidden}
+/* product-reveal 黃底黑字 (背景是 ink，與其他 highlighter 反向) */
+.product-reveal h1 .accent{
+  background:var(--accent);
+  color:var(--ink);
+  padding:0 0.18em;
+  display:inline-block;
+  margin:0 0.04em;
+  line-height:1;
+}
+/* 防止 知識資料 在 product-reveal h1 中被斷行 */
+.product-reveal h1 .nb{white-space:nowrap}
 .brutal-list li::before{
   background:var(--ink);
   color:var(--accent);
@@ -1035,7 +1046,7 @@ h1.title .red{
 <!-- ─── PRODUCT REVEAL — second H1 (slab) ──── -->
 <div class="product-reveal">
   <div class="pr-shell">
-    <h1>Domino <span class="accent">知識資料</span><br>導出工具</h1>
+    <h1>Domino <span class="nb">知識<span class="accent">資料</span></span><br>導出工具</h1>
   </div>
 </div>
 
